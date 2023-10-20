@@ -14,8 +14,9 @@ export class UsersService extends AbstraitService<User> {
     super(userRepository)
   }
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user'
+  create(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepository.create(createUserDto)
+    return this.userRepository.save(user)
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

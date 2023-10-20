@@ -6,8 +6,8 @@ import { AbstraitEntity } from '../entities/entity.entity'
 export abstract class AbstraitService<Entity extends AbstraitEntity> {
   constructor(protected readonly repository: Repository<Entity>) {}
 
-  async findAll(): Promise<Entity[]> {
-    const res = await this.repository.find()
+  async findAll(options?: FindOneOptions<Entity>): Promise<Entity[]> {
+    const res = await this.repository.find(options)
     return res
   }
 
@@ -15,6 +15,11 @@ export abstract class AbstraitService<Entity extends AbstraitEntity> {
     const res = await this.repository.findOne({
       where: { id },
     } as FindOneOptions<Entity>)
+    return res
+  }
+
+  async findBy(options?: FindOneOptions<Entity>): Promise<Entity> {
+    const res = await this.repository.findOne(options)
     return res
   }
 }

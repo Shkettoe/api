@@ -3,8 +3,6 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { DatabaseModule } from './database/database.module'
 import { UsersModule } from './users/users.module'
-import { AuthController } from './auth/auth.controller'
-import { AuthService } from './auth/auth.service'
 import { NotesModule } from './notes/notes.module'
 import { QuestionsModule } from './questions/questions.module'
 import { RatesModule } from './rates/rates.module'
@@ -21,7 +19,7 @@ import { UserNoteSettingsModule } from './user-note-settings/user-note-settings.
     UserQuestionStatesModule,
     UserNoteSettingsModule,
   ],
-  controllers: [AppController, AuthController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
 import { User } from 'src/users/entities/user.entity'
 import { UsersService } from 'src/users/users.service'
 
-@Injectable()
 class Bcryption {
   // takes in input and returns a hash of it with a pinch of salt
   async hash(input: string) {
@@ -21,20 +21,32 @@ class Bcryption {
   }
 }
 
+interface AuthorizationReturn {
+  jwt: string
+  user: User
+}
+
 @Injectable()
 export class AuthService {
   constructor(
-    // private readonly bcryption: Bcryption,
     private readonly usersService: UsersService,
-  ) {
-    // this.bcryption = new Bcryption()
-  }
+    private readonly jwtService: JwtService,
+  ) {}
+
+  bcryption = new Bcryption()
 
   //logs user in
-  async login(email: string, passwrod: string) {}
+  async login(email: string, password: string) {
+    const user = await this.usersService.findBy({ where: { email } })
+    if (!(await this.bcryption.dehash(user.password, password)))
+      throw new Error('incorrect password')
+    return { jwt: await this.jwtService.sign({ sub: user.id }), user }
+  }
 
   // registers a user
-  async register(createUserDto: CreateUserDto) {
-    let user: User
+  async register(createUserDto: CreateUserDto): Promise<AuthorizationReturn> {
+    createUserDto.password = await this.bcryption.hash(createUserDto.password)
+    const user: User = await this.usersService.create(createUserDto)
+    return { jwt: await this.jwtService.sign({ sub: user.id }), user }
   }
 }
