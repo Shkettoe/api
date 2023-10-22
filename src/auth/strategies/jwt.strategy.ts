@@ -8,13 +8,13 @@ import { ConfigService } from '@nestjs/config'
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   private static extractJWT(req: Request) {
     try {
-      return req.cookies.jwt
+      return req.cookies.access_token
     } catch (err) {
       throw new UnauthorizedException('token not found')
     }
   }
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
       ignoreExpiration: true,

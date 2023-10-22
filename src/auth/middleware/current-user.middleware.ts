@@ -34,9 +34,9 @@ export class CurrentUserMiddleware implements NestMiddleware {
     private readonly jwtService: JwtService,
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const { jwt } = req.cookies
+    const { access_token } = req.cookies
     try {
-      const { sub } = await this.jwtService.verify(jwt)
+      const { sub } = await this.jwtService.verify(access_token)
       req.current_user = await this.usersService.findOne(sub)
     } catch (err) {}
     next()

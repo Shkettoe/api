@@ -28,6 +28,7 @@ import { Rate } from 'src/rates/entities/rate.entity'
           UserNoteSetting,
           UserQuestionState,
         ],
+        synchronize: false
       }),
       inject: [ConfigService],
     }),

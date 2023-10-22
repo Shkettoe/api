@@ -21,7 +21,7 @@ class Bcryption {
   }
 }
 
-interface AuthorizationReturn {
+export interface AuthorizationReturn {
   jwt: string
   user: User
 }
@@ -36,7 +36,7 @@ export class AuthService {
   bcryption = new Bcryption()
 
   //logs user in
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<AuthorizationReturn> {
     const user = await this.usersService.findBy({ where: { email } })
     if (!(await this.bcryption.dehash(user.password, password)))
       throw new Error('incorrect password')

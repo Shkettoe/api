@@ -8,6 +8,6 @@ export class NoSessionGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest<Request>()
-    return !req.cookies.jwt
+    return !req.cookies.access_token
   }
 }

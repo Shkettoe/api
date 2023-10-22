@@ -51,16 +51,16 @@ export class QuestionsController {
     })
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateQuestionDto: UpdateQuestionDto,
-  ) {
-    return this.questionsService.update(+id, updateQuestionDto)
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateQuestionDto: UpdateQuestionDto,
+  // ) {
+  //   return this.questionsService.update(+id, updateQuestionDto)
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.questionsService.remove(+id)
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.questionsService.remove(+id)
+  // }
 }

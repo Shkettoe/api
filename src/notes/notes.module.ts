@@ -9,14 +9,22 @@ import { Question } from 'src/questions/entities/question.entity'
 import { RatesController } from 'src/rates/rates.controller'
 import { RatesService } from 'src/rates/rates.service'
 import { Rate } from 'src/rates/entities/rate.entity'
+import { UserQuestionStatesService } from 'src/user-question-states/user-question-states.service'
+import { UserQuestionState } from 'src/user-question-states/entities/user-question-state.entity'
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Note]),
     TypeOrmModule.forFeature([Question]),
     TypeOrmModule.forFeature([Rate]),
+    TypeOrmModule.forFeature([UserQuestionState])
   ],
   controllers: [NotesController, QuestionsController, RatesController],
-  providers: [NotesService, QuestionsService, RatesService],
+  providers: [
+    NotesService,
+    QuestionsService,
+    RatesService,
+    UserQuestionStatesService,
+  ],
 })
 export class NotesModule {}

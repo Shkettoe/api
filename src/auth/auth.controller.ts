@@ -11,7 +11,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import { User } from 'src/users/entities/user.entity'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
-import { response } from 'express'
+import { Response, response } from 'express'
 import { AuthGuard } from '@nestjs/passport'
 import { NoSessionGuard } from './guards/no-session.guard'
 
@@ -22,7 +22,10 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(NoSessionGuard)
-  async register(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async register(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<User> {
     const { jwt, user } = await this.authService
       .register(createUserDto)
       .catch(({ message }) => {
@@ -49,8 +52,8 @@ export class AuthController {
     },
   })
   @UseGuards(AuthGuard('local'), NoSessionGuard)
-  async login(@Req() request, @Res({ passthrough: true }) response) {
+  async login(@Req() request, @Res({ passthrough: true }) response: Response) {
     const { user, jwt } = await request.user
-    response.cookie('jwt', jwt, { httpOnly: true })
+    response.cookie('access_token', jwt, { httpOnly: true })
   }
 }
