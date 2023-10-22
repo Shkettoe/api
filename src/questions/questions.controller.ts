@@ -6,30 +6,49 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
+  BadRequestException,
+  UseGuards,
 } from '@nestjs/common'
 import { QuestionsService } from './questions.service'
 import { CreateQuestionDto } from './dto/create-question.dto'
 import { UpdateQuestionDto } from './dto/update-question.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { NotesService } from 'src/notes/notes.service'
+import { AuthGuard } from '@nestjs/passport'
+import { Question } from './entities/question.entity'
 
-@Controller('questions')
+@Controller('notes')
 @ApiTags('questions')
 export class QuestionsController {
-  constructor(private readonly questionsService: QuestionsService) {}
+  constructor(
+    private readonly questionsService: QuestionsService,
+    private readonly notesService: NotesService,
+  ) {}
 
-  @Post()
-  create(@Body() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.create(createQuestionDto)
+  @Post(':id')
+  @UseGuards(AuthGuard('jwt'))
+  async createQuestion(
+    @Param('id') id: number,
+    @Body() createQuestionDto: CreateQuestionDto,
+  ): Promise<Question> {
+    const note = await this.notesService.findOne(id).catch(({ message }) => {
+      throw new NotFoundException(message)
+    })
+    createQuestionDto.note = note
+    return await this.questionsService
+      .create(createQuestionDto)
+      .catch(({ message }) => {
+        throw new BadRequestException(message)
+      })
   }
 
-  @Get()
-  findAll() {
-    return this.questionsService.findAll()
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.questionsService.findOne(+id)
+  @Get('question/:id')
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id') id: number): Promise<Question> {
+    return this.questionsService.findOne(id).catch(({ message }) => {
+      throw new NotFoundException(message)
+    })
   }
 
   @Patch(':id')

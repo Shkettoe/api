@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { CreateQuestionDto } from './dto/create-question.dto';
-import { UpdateQuestionDto } from './dto/update-question.dto';
+import { Injectable } from '@nestjs/common'
+import { CreateQuestionDto } from './dto/create-question.dto'
+import { UpdateQuestionDto } from './dto/update-question.dto'
+import { AbstraitService } from 'src/common/services/service.service'
+import { Question } from './entities/question.entity'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 
 @Injectable()
-export class QuestionsService {
-  create(createQuestionDto: CreateQuestionDto) {
-    return 'This action adds a new question';
+export class QuestionsService extends AbstraitService<Question> {
+  constructor(
+    @InjectRepository(Question)
+    private readonly questionRepository: Repository<Question>,
+  ) {
+    super(questionRepository)
   }
 
-  findAll() {
-    return `This action returns all questions`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} question`;
+  create(createQuestionDto: CreateQuestionDto): Promise<Question> {
+    const question = this.questionRepository.create(createQuestionDto)
+    return this.questionRepository.save(question)
   }
 
   update(id: number, updateQuestionDto: UpdateQuestionDto) {
-    return `This action updates a #${id} question`;
+    return `This action updates a #${id} question`
   }
 
   remove(id: number) {
-    return `This action removes a #${id} question`;
+    return `This action removes a #${id} question`
   }
 }

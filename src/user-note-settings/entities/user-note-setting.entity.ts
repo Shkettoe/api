@@ -8,6 +8,6 @@ export class UserNoteSetting extends AbstraitEntity {
   @ManyToOne(() => User, user => user.settings)
   user: User
 
-  @ManyToOne(() => Note, note => note.setting)
+  @ManyToOne(() => Note, note => note.settings)
   note: Note
 }

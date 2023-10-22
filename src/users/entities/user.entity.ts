@@ -26,7 +26,10 @@ export class User extends AbstraitEntity {
   @Exclude()
   password: string
 
-  @OneToMany(() => Note, note => note.user)
+  /**
+   * @note use eager to auto load relation
+   */
+  @OneToMany(() => Note, note => note.user, { eager: true })
   @ApiProperty()
   notes: Note[]
 

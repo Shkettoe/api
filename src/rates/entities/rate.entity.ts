@@ -2,9 +2,10 @@ import { AbstraitEntity } from 'src/common/entities/entity.entity'
 import { Note } from 'src/notes/entities/note.entity'
 import { Question } from 'src/questions/entities/question.entity'
 import { User } from 'src/users/entities/user.entity'
-import { Column, Entity, ManyToOne } from 'typeorm'
+import { Check, Column, Entity, ManyToOne } from 'typeorm'
 
 @Entity()
+@Check('"rate" > 0 && "rate" < 5')
 export class Rate extends AbstraitEntity {
   @Column({ nullable: false, type: 'integer' })
   rate: number

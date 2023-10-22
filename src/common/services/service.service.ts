@@ -11,10 +11,15 @@ export abstract class AbstraitService<Entity extends AbstraitEntity> {
     return res
   }
 
-  async findOne(id: number): Promise<Entity> {
-    const res = await this.repository.findOne({
-      where: { id },
-    } as FindOneOptions<Entity>)
+  async findOne(id: number, relations?: string[]): Promise<Entity> {
+    const res = await this.repository
+      .findOneOrFail({
+        where: { id },
+        relations,
+      } as FindOneOptions<Entity>)
+      .catch(message => {
+        throw new Error(message)
+      })
     return res
   }
 

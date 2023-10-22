@@ -1,26 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
+import { Injectable } from '@nestjs/common'
+import { CreateNoteDto } from './dto/create-note.dto'
+import { UpdateNoteDto } from './dto/update-note.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { AbstraitService } from 'src/common/services/service.service'
+import { Note } from './entities/note.entity'
+import { Repository } from 'typeorm'
 
 @Injectable()
-export class NotesService {
+export class NotesService extends AbstraitService<Note> {
+  constructor(
+    @InjectRepository(Note) private readonly noteRepository: Repository<Note>,
+  ) {
+    super(noteRepository)
+  }
+
   create(createNoteDto: CreateNoteDto) {
-    return 'This action adds a new note';
-  }
-
-  findAll() {
-    return `This action returns all notes`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} note`;
+    const note = this.noteRepository.create(createNoteDto)
+    return this.noteRepository.save(note)
   }
 
   update(id: number, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
+    return `This action updates a #${id} note`
   }
 
   remove(id: number) {
-    return `This action removes a #${id} note`;
+    return `This action removes a #${id} note`
   }
 }

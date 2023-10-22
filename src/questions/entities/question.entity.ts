@@ -12,10 +12,12 @@ export class Question extends AbstraitEntity {
   @Column({ nullable: false })
   answer: string
 
-  @ManyToOne(() => Note, note => note.questions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Note, note => note.questions, {
+    onDelete: 'CASCADE',
+  })
   note: Note
 
-  @OneToMany(() => Rate, rate => rate.question)
+  @OneToMany(() => Rate, rate => rate.question, { eager: true })
   rates: Rate[]
 
   @OneToMany(() => UserQuestionState, uqs => uqs.question)

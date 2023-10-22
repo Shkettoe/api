@@ -1,36 +1,52 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { RatesService } from './rates.service';
-import { CreateRateDto } from './dto/create-rate.dto';
-import { UpdateRateDto } from './dto/update-rate.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  NotFoundException,
+} from '@nestjs/common'
+import { RatesService } from './rates.service'
+import { CreateRateDto } from './dto/create-rate.dto'
+import { ApiTags } from '@nestjs/swagger'
+import { Rate } from './entities/rate.entity'
+import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
+import { User } from 'src/users/entities/user.entity'
+import { QuestionsService } from 'src/questions/questions.service'
 
-@Controller('rates')
+@Controller('notes')
 @ApiTags('rates')
 export class RatesController {
-  constructor(private readonly ratesService: RatesService) {}
+  constructor(
+    private readonly ratesService: RatesService,
+    private readonly questionService: QuestionsService,
+  ) {}
 
-  @Post()
-  create(@Body() createRateDto: CreateRateDto) {
-    return this.ratesService.create(createRateDto);
+  @Post('solve/:id')
+  async create(
+    @CurrentUser() user: User,
+    @Param('id') id: number,
+    @Body() createRateDto: CreateRateDto,
+  ): Promise<Rate> {
+    createRateDto.user = user
+    createRateDto.question = await this.questionService
+      .findOne(id, ['note'])
+      .catch(({ message }) => {
+        throw new NotFoundException(message)
+      })
+    createRateDto.note = createRateDto.question.note
+    return this.ratesService.create(createRateDto)
   }
 
-  @Get()
+  @Get('rates/all')
   findAll() {
-    return this.ratesService.findAll();
+    return this.ratesService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ratesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRateDto: UpdateRateDto) {
-    return this.ratesService.update(+id, updateRateDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ratesService.remove(+id);
+  @Get('rates/:id')
+  findOne(@Param('id') id: number): Promise<Rate> {
+    return this.ratesService.findOne(id).catch(({ message }) => {
+      throw new NotFoundException(message)
+    })
   }
 }

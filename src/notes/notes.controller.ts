@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { NotesService } from './notes.service';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  BadRequestException,
+  NotFoundException,
+  UseGuards,
+} from '@nestjs/common'
+import { NotesService } from './notes.service'
+import { CreateNoteDto } from './dto/create-note.dto'
+import { ApiTags } from '@nestjs/swagger'
+import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
+import { User } from 'src/users/entities/user.entity'
+import { Note } from './entities/note.entity'
+import { AuthGuard } from '@nestjs/passport'
 
 @Controller('notes')
 @ApiTags('notes')
@@ -10,27 +22,37 @@ export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.notesService.create(createNoteDto);
+  @UseGuards(AuthGuard('jwt'))
+  create(
+    @CurrentUser() user: User,
+    @Body() createNoteDto: CreateNoteDto,
+  ): Promise<Note> {
+    createNoteDto.user = user
+    return this.notesService.create(createNoteDto).catch(({ message }) => {
+      throw new BadRequestException('something went wrong', message)
+    })
   }
 
   @Get()
-  findAll() {
-    return this.notesService.findAll();
+  findAll(): Promise<Note[]> {
+    return this.notesService.findAll()
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notesService.findOne(+id);
+  @UseGuards(AuthGuard('jwt'))
+  findOne(@Param('id') id: number): Promise<Note> {
+    return this.notesService.findOne(id).catch(({ message }) => {
+      throw new NotFoundException(message)
+    })
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
-    return this.notesService.update(+id, updateNoteDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
+  //   return this.notesService.update(+id, updateNoteDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.notesService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.notesService.remove(+id);
+  // }
 }

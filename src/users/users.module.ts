@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { UsersController } from './users.controller'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { LocalStrategy } from 'src/auth/strategies/local.strategy'
 import { JwtStrategy } from 'src/auth/strategies/jwt.strategy'
+import { CurrentUserMiddleware } from 'src/auth/middleware/current-user.middleware'
 
 @Module({
   imports: [
@@ -25,4 +26,8 @@ import { JwtStrategy } from 'src/auth/strategies/jwt.strategy'
   controllers: [UsersController, AuthController],
   providers: [UsersService, AuthService, LocalStrategy, JwtStrategy],
 })
-export class UsersModule {}
+export class UsersModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(CurrentUserMiddleware).forRoutes('*')
+  }
+}
