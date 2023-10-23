@@ -6,6 +6,7 @@ import {
   Param,
   NotFoundException,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common'
 import { RatesService } from './rates.service'
 import { CreateRateDto } from './dto/create-rate.dto'
@@ -34,6 +35,12 @@ export class RatesController {
     @Param('id') id: number,
     @Body() createRateDto: CreateRateDto,
   ): Promise<Rate> {
+    const rated = await this.uqsService.findAll({
+      relations: ['question'],
+      where: { question: { id } },
+    })
+    if (rated.length)
+      throw new ForbiddenException(`You have solved this question already`)
     createRateDto.user = user
     createRateDto.question = await this.questionService
       .findOne(id, ['note'])

@@ -6,7 +6,7 @@ import { User } from 'src/users/entities/user.entity'
 import { Check, Column, Entity, ManyToOne } from 'typeorm'
 
 @Entity()
-@Check(`"rate" > 0 AND "rate" < 5`)
+@Check(`"rate" > 0 AND "rate" <= 5`)
 export class Rate extends AbstraitEntity {
   @ApiProperty()
   @Column({ nullable: false, type: 'integer' })
