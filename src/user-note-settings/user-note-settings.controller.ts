@@ -11,6 +11,8 @@ import { UserNoteSettingsService } from './user-note-settings.service'
 import { CreateUserNoteSettingDto } from './dto/create-user-note-setting.dto'
 import { UpdateUserNoteSettingDto } from './dto/update-user-note-setting.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
+import { User } from 'src/users/entities/user.entity'
 
 @Controller('user-note-settings')
 @ApiTags('users-note-settings')
@@ -19,14 +21,20 @@ export class UserNoteSettingsController {
     private readonly userNoteSettingsService: UserNoteSettingsService,
   ) {}
 
-  @Post()
-  create(@Body() createUserNoteSettingDto: CreateUserNoteSettingDto) {
+  @Post(':id')
+  create(
+    @CurrentUser() user: User,
+    @Param('id') id: number,
+    @Body() createUserNoteSettingDto: CreateUserNoteSettingDto,
+  ) {
+    createUserNoteSettingDto.user = user
+    createUserNoteSettingDto.note_id = id
     return this.userNoteSettingsService.create(createUserNoteSettingDto)
   }
 
   @Get()
   findAll() {
-    return this.userNoteSettingsService.findAll()
+    return this.userNoteSettingsService.findAll({ relations: { note: true } })
   }
 
   @Get(':id')

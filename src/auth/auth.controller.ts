@@ -56,4 +56,11 @@ export class AuthController {
     const { user, jwt } = await request.user
     response.cookie('access_token', jwt, { httpOnly: true })
   }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token', { httpOnly: true })
+    return 'logged out'
+  }
 }

@@ -1,7 +1,7 @@
 import { AbstraitEntity } from 'src/common/entities/entity.entity'
 import { Note } from 'src/notes/entities/note.entity'
 import { User } from 'src/users/entities/user.entity'
-import { Entity, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 
 @Entity()
 export class UserNoteSetting extends AbstraitEntity {
@@ -9,5 +9,9 @@ export class UserNoteSetting extends AbstraitEntity {
   user: User
 
   @ManyToOne(() => Note, note => note.settings)
+  @JoinColumn({ name: 'note_id' })
   note: Note
+
+  @Column()
+  note_id: number
 }

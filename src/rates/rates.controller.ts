@@ -18,6 +18,7 @@ import { QuestionsService } from 'src/questions/questions.service'
 import { UserQuestionStatesService } from 'src/user-question-states/user-question-states.service'
 import { AuthGuard } from '@nestjs/passport'
 import { response } from 'express'
+import { IsNull, LessThan, Not } from 'typeorm'
 
 @Controller('notes')
 @ApiTags('rates')
@@ -37,7 +38,7 @@ export class RatesController {
   ): Promise<Rate> {
     const rated = await this.uqsService.findAll({
       relations: ['question'],
-      where: { question: { id } },
+      where: { question: { id }, user: { id: user.id } },
     })
     if (rated.length)
       throw new ForbiddenException(`You have solved this question already`)
@@ -65,21 +66,35 @@ export class RatesController {
     @CurrentUser() user: User,
     @Param('id') id: number,
   ): Promise<Rate[]> {
-    const res = await this.ratesService.findAll({
+    const rates = await this.ratesService.findAll({
       where: {
-        question: {
-          note: {
-            id,
-          },
+        note: {
+          id,
         },
         // doesn't work with just 'user' for some reason
         user: {
           id: user.id,
         },
       },
+
       order: { created_at: 'ASC' },
-      relations: ['question'],
+      relations: {
+        question: true,
+        note: {
+          settings: { user: true },
+        },
+      },
       loadEagerRelations: false,
+    })
+
+    const res: Rate[] = []
+
+    rates.map((r: Rate) => {
+      r.note.settings.map(s => {
+        if (s.user.id == user.id) {
+          if (s.created_at < r.created_at) res.push(r)
+        }
+      })
     })
 
     return [

@@ -1,7 +1,7 @@
 import { AbstraitEntity } from 'src/common/entities/entity.entity'
 import { Question } from 'src/questions/entities/question.entity'
 import { User } from 'src/users/entities/user.entity'
-import { Entity, ManyToOne } from 'typeorm'
+import { Entity, JoinColumn, ManyToOne } from 'typeorm'
 
 @Entity()
 export class UserQuestionState extends AbstraitEntity {

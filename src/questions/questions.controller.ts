@@ -3,22 +3,20 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   NotFoundException,
   BadRequestException,
   UseGuards,
 } from '@nestjs/common'
 import { QuestionsService } from './questions.service'
 import { CreateQuestionDto } from './dto/create-question.dto'
-import { UpdateQuestionDto } from './dto/update-question.dto'
 import { ApiTags } from '@nestjs/swagger'
 import { NotesService } from 'src/notes/notes.service'
 import { AuthGuard } from '@nestjs/passport'
 import { Question } from './entities/question.entity'
 import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
 import { User } from 'src/users/entities/user.entity'
+import { IsNull, Not } from 'typeorm'
 
 @Controller('notes')
 @ApiTags('questions')
@@ -69,6 +67,21 @@ export class QuestionsController {
     })
     const perc = (finished.length * 100) / all.length
     return [perc, finished]
+  }
+
+  @Get(':id/questions')
+  @UseGuards(AuthGuard('jwt'))
+  async getQuestions(
+    @CurrentUser() user: User,
+    @Param('id') id: number,
+  ): Promise<Question[]> {
+    const questions = await this.questionsService.findAll({
+      where: {
+        note: { id },
+        finished_by_users: [{ id: IsNull() }, { user: { id: Not(user.id) } }],
+      },
+    })
+    return questions
   }
 
   // @Patch(':id')
