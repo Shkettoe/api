@@ -2,8 +2,8 @@
 .env.*
 
 #Database environment
-orm*
-.orm*
+# orm*
+# .orm*
 
 # compiled output
 /dist

@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
 import * as cookieParser from 'cookie-parser'
 
+require('dotenv').config()
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.setGlobalPrefix('api')
@@ -25,6 +27,6 @@ async function bootstrap() {
   })
   SwaggerModule.setup('api', app, document, { explorer: true })
 
-  await app.listen(5000)
+  await app.listen(Number(process.env.APP_PORT) || 5000)
 }
 bootstrap()
