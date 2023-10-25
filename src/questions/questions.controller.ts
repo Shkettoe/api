@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common'
 import { QuestionsService } from './questions.service'
 import { CreateQuestionDto } from './dto/create-question.dto'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { NotesService } from 'src/notes/notes.service'
 import { AuthGuard } from '@nestjs/passport'
 import { Question } from './entities/question.entity'
@@ -28,6 +28,13 @@ export class QuestionsController {
 
   @Post(':id')
   @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    description: 'Single Question',
+  })
+  @ApiOperation({
+    description: 'Creates a new Question inside the note with an :id',
+    summary: 'creates new question',
+  })
   async createQuestion(
     @Param('id') id: number,
     @Body() createQuestionDto: CreateQuestionDto,
@@ -45,6 +52,13 @@ export class QuestionsController {
 
   @Get('question/:id')
   @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    description: 'Single Question',
+  })
+  @ApiOperation({
+    description: 'Retrieves a single Question with an :id',
+    summary: 'gets question with :id',
+  })
   findOne(@Param('id') id: number): Promise<Question> {
     return this.questionsService.findOne(id).catch(({ message }) => {
       throw new NotFoundException(message)
@@ -53,6 +67,15 @@ export class QuestionsController {
 
   @Get(':id/finished')
   @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    description: 'Array of Questions',
+  })
+  @ApiOperation({
+    description:
+      'Returns percentage of questions completed by the Current User in Note :id and also returns all the questions too.',
+    summary:
+      'gets percentage of finished questions along with questions from note :id',
+  })
   async findFinished(
     @CurrentUser() user: User,
     @Param('id') id: number,
@@ -71,6 +94,14 @@ export class QuestionsController {
 
   @Get(':id/questions')
   @UseGuards(AuthGuard('jwt'))
+  @ApiResponse({
+    description: 'Array of Questions',
+  })
+  @ApiOperation({
+    description:
+      "Returns questions from the Note :id that weren't finished by Current User",
+    summary: 'questions from Note :id',
+  })
   async getQuestions(
     @CurrentUser() user: User,
     @Param('id') id: number,

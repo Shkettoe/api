@@ -6,19 +6,17 @@ import {
   Param,
   NotFoundException,
   UseGuards,
-  ForbiddenException,
 } from '@nestjs/common'
 import { RatesService } from './rates.service'
 import { CreateRateDto } from './dto/create-rate.dto'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Rate } from './entities/rate.entity'
 import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
 import { User } from 'src/users/entities/user.entity'
 import { QuestionsService } from 'src/questions/questions.service'
 import { UserQuestionStatesService } from 'src/user-question-states/user-question-states.service'
 import { AuthGuard } from '@nestjs/passport'
-import { response } from 'express'
-import { IsNull, LessThan, Not } from 'typeorm'
+import { SolvedGuard } from './guards/solved.guard'
 
 @Controller('notes')
 @ApiTags('rates')
@@ -30,18 +28,18 @@ export class RatesController {
   ) {}
 
   @Post('solve/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'), SolvedGuard)
+  @ApiResponse({ description: 'Single Rate' })
+  @ApiOperation({
+    description:
+      'Creates a record in the Rates table, if the rate was set to 5 also creates a record in User-Question-States, signifying that the question was solved',
+    summary: 'Solves a question with :id',
+  })
   async create(
     @CurrentUser() user: User,
     @Param('id') id: number,
     @Body() createRateDto: CreateRateDto,
   ): Promise<Rate> {
-    const rated = await this.uqsService.findAll({
-      relations: ['question'],
-      where: { question: { id }, user: { id: user.id } },
-    })
-    if (rated.length)
-      throw new ForbiddenException(`You have solved this question already`)
     createRateDto.user = user
     createRateDto.question = await this.questionService
       .findOne(id, ['note'])
@@ -56,11 +54,22 @@ export class RatesController {
   }
 
   @Get('all/rates')
+  @ApiResponse({ description: 'Array of Rates' })
+  @ApiOperation({
+    description: 'Retrieves all rates from the database',
+    summary: 'Lists all rates',
+  })
   findAll(): Promise<Rate[]> {
     return this.ratesService.findAll()
   }
 
   @Get(':id/rates')
+  @ApiResponse({ description: 'Array of Rates' })
+  @ApiOperation({
+    description:
+      'Retrieves all the Rates that are related to the Questions from Note :id, ignoring the duplicates or Rates that occured before the last Reset',
+    summary: 'Lists all rates',
+  })
   @UseGuards(AuthGuard('jwt'))
   async findPerNote(
     @CurrentUser() user: User,
@@ -103,6 +112,11 @@ export class RatesController {
   }
 
   @Get('rates/:id')
+  @ApiResponse({ description: 'Single Rate' })
+  @ApiOperation({
+    description: 'Retrieves a single Rate with a :id',
+    summary: 'gets a rate with :id',
+  })
   findOne(@Param('id') id: number): Promise<Rate> {
     return this.ratesService.findOne(id).catch(({ message }) => {
       throw new NotFoundException(message)

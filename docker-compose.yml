@@ -1,0 +1,39 @@
+version: '3.5'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    container_name: postgres
+    ports:
+      - '5433:5433'
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-docker-postgres
+    env_file: ./.env.docker
+    environment:
+      - PG_HOST=db
+      - PG_PORT=5433
+      - PG_USERNAME=postgres
+      - PG_PASSWORD=12345678
+      - PG_DATABASE=TheSemiSmartWay
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - db

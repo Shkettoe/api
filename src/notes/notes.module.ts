@@ -17,7 +17,7 @@ import { UserQuestionState } from 'src/user-question-states/entities/user-questi
     TypeOrmModule.forFeature([Note]),
     TypeOrmModule.forFeature([Question]),
     TypeOrmModule.forFeature([Rate]),
-    TypeOrmModule.forFeature([UserQuestionState])
+    TypeOrmModule.forFeature([UserQuestionState]),
   ],
   controllers: [NotesController, QuestionsController, RatesController],
   providers: [
@@ -26,5 +26,6 @@ import { UserQuestionState } from 'src/user-question-states/entities/user-questi
     RatesService,
     UserQuestionStatesService,
   ],
+  exports: [UserQuestionStatesService, NotesService],
 })
 export class NotesModule {}

@@ -1,6 +1,6 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common'
 import { UsersService } from './users.service'
-import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { User } from './entities/user.entity'
 import { AuthGuard } from '@nestjs/passport'
 import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
@@ -10,22 +10,15 @@ import { CurrentUser } from 'src/auth/decorators/current_user.decorator'
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /**
-   * @note must be above /:id route or else it will
-     parse /me as an :id param
-   *
-   * @param user
-   * @returns 
-   */
-  @Get('me')
-  me(@CurrentUser() user: User): User {
-    return user
-  }
-
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiResponse({
+    description: 'An array of Users',
     type: [User],
+  })
+  @ApiOperation({
+    description: 'Retrieves all users from the database',
+    summary: 'all users',
   })
   findAll(): Promise<User[]> {
     return this.usersService.findAll()
@@ -33,7 +26,12 @@ export class UsersController {
 
   @Get(':id')
   @ApiResponse({
+    description: 'Single User',
     type: User,
+  })
+  @ApiOperation({
+    description: 'Retrieves a users with an :id from the database',
+    summary: 'user with an :id',
   })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id)

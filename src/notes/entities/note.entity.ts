@@ -4,7 +4,7 @@ import { Question } from 'src/questions/entities/question.entity'
 import { Rate } from 'src/rates/entities/rate.entity'
 import { UserNoteSetting } from 'src/user-note-settings/entities/user-note-setting.entity'
 import { User } from 'src/users/entities/user.entity'
-import { Column, Entity, JoinTable, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
 
 @Entity()
 export class Note extends AbstraitEntity {
@@ -26,7 +26,7 @@ export class Note extends AbstraitEntity {
   @ApiProperty()
   rates: Rate[]
 
-  @OneToMany(() => UserNoteSetting, uns => uns.note)
+  @OneToMany(() => UserNoteSetting, uns => uns.note, { eager: true })
   @ApiProperty()
   settings: UserNoteSetting[]
 }

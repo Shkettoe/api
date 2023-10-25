@@ -21,8 +21,7 @@ export class UserQuestionStatesService extends AbstraitService<UserQuestionState
     return this.uqsRepository.save(uqs)
   }
 
-  async remove(id: number) {
-    const uqs = await this.findOne(id)
+  async remove(uqs: UserQuestionState) {
     return this.uqsRepository.remove(uqs)
   }
 }
