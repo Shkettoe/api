@@ -27,6 +27,8 @@ async function bootstrap() {
   })
   SwaggerModule.setup('api', app, document, { explorer: true })
 
-  await app.listen(Number(process.env.APP_PORT) || 5000)
+  await app.listen(Number(process.env.APP_PORT) || 5000, () => {
+    console.log(`api available on localhost:${process.env.APP_PORT}`)
+  })
 }
 bootstrap()

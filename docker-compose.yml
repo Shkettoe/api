@@ -1,39 +1,29 @@
 version: '3.5'
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_PASSWORD=postgres
-    container_name: postgres
-    ports:
-      - '5433:5433'
-
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: nest-docker-postgres
-    env_file: ./.env.docker
     environment:
+      - APP_PORT=3000
       - PG_HOST=db
-      - PG_PORT=5433
+      - PG_PORT=5432
       - PG_USERNAME=postgres
-      - PG_PASSWORD=12345678
-      - PG_DATABASE=TheSemiSmartWay
+      - PG_PASSWORD=postgres
+      - PG_DATABASE=base
+      - JWT_SECRET_KEY=7f23d42198a3b688f7094df24f17a018dde8390869212eae9d5f00cebfac6457
     ports:
-      - '3000:3000'
+      - 3000:3000
     depends_on:
       - db
-
-  pgadmin:
-    image: dpage/pgadmin4
+  db:
+    image: postgres
     restart: always
-    container_name: nest-pgadmin4
     environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=base
+    container_name: postgres
     ports:
-      - '5050:80'
-    depends_on:
-      - db
+      - 35000:5432

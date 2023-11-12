@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-import { databaseProviders } from './database.providers'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { User } from 'src/users/entities/user.entity'
@@ -28,12 +27,10 @@ import { Rate } from 'src/rates/entities/rate.entity'
           UserNoteSetting,
           UserQuestionState,
         ],
-        synchronize: false
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),
   ],
-  providers: [...databaseProviders],
-  exports: [...databaseProviders],
 })
 export class DatabaseModule {}

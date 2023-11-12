@@ -11,7 +11,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({
     description: 'An array of Users',
     type: [User],
