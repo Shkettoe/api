@@ -5,9 +5,10 @@ import { DatabaseModule } from './database/database.module'
 import { UsersModule } from './users/users.module'
 import { NotesModule } from './notes/notes.module'
 import { UserNoteSettingsModule } from './user-note-settings/user-note-settings.module'
+import { FeaturesModule } from './features/features.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, NotesModule, UserNoteSettingsModule],
+  imports: [DatabaseModule, UsersModule, NotesModule, UserNoteSettingsModule, FeaturesModule],
   controllers: [AppController],
   providers: [AppService],
 })
